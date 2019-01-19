@@ -1,0 +1,11 @@
+Esenzioni<br>
+{% include 'patients/rapid_exemption_form.html' %}<br>
+<p>
+  <ul>
+    {%  for e in exemptions %}
+      {{ e.name }} {{ e.exemption }}
+      {{ e.signature_date|date:'d/m/Y' }}
+      <a href="">rinnova</a><br>
+    {% endfor %}
+</ul>
+</p>

@@ -1,0 +1,13 @@
+<form action="{% url 'patients:rapid_add_exemption' %}" method="post">
+  {% csrf_token %}
+  {{ exemption_form.exemption.label_tag }}
+  {{ exemption_form.exemption }}
+  {{ exemption_form.signature_place.label_tag }}
+  {{ exemption_form.signature_place }}
+  {{ exemption_form.signature_date.label_tag }}
+  {{ exemption_form.signature_date }}
+  <input type="hidden" id="patient" name="patient"
+         value="{{ object.id }}">
+  <input type="submit" value="aggiungi">
+</form>
+

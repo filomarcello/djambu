@@ -1,0 +1,16 @@
+{% extends './base_djambu.html' %}
+{% load admin_urls %}
+
+{% block content %}
+  {% include 'patients/panel_add_patient.html' %}
+  <ul>
+    {% for p in patient_list %}
+      <li>
+        {{ p.last_name }} {{ p.first_name }}
+        {{ p.sex|capfirst }} {{ p.birth_date|date:'d/m/Y' }}
+        <a href="/patients_admin/patients/patient/{{ p.pk }}/change/">modifica</a>
+        <a href="{% url 'patients:patient_detail' p.pk %}">vedi</a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endblock %}
