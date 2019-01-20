@@ -4,6 +4,10 @@
   Djambu
 {% endblock %}
 
+{% block stylesheet %}
+  {% comment %}URL of CSS stylesheet{% endcomment %}
+{% endblock %}
+
 {% block body %}
   {% include './nav_bar.html' %}
   {% block content %}{% endblock %}
