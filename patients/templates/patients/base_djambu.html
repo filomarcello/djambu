@@ -1,11 +1,12 @@
 {% extends './base.html' %}
+{% load static %}
 
 {% block title %}
   Djambu
 {% endblock %}
 
 {% block stylesheet %}
-  {% comment %}URL of CSS stylesheet{% endcomment %}
+  {% static 'patients/style.css' %}
 {% endblock %}
 
 {% block body %}
