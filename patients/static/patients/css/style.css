@@ -1,8 +1,28 @@
-html,body{margin:0;padding:0}
-body{font: 100% Arial,sans-serif;text-align:left}
 
+body{
+    font-family: Lato, sans-serif;
+}
+
+.nav-bar {
+    height: 100%;
+    width: 125px;
+    position: fixed;
+    z-index: 1;
+    /* top: 0;
+    left: 0; */
+    overflow-x: hidden;
+}
+
+.main {
+    margin-left: 125px;
+    padding: 0px 10px;
+}
+
+
+
+/*
 p{margin:0 10px 10px}
-/* a{padding:5px; text-decoration:none; color:#000000;} */
+a{padding:5px; text-decoration:none; color:#000000;}
 div#header{background-color:#F3F2ED;}
 div#header h1{height:80px;line-height:80px;margin:0;padding-left:10px;}
 div#container{text-align:left}
@@ -18,3 +38,4 @@ div#content{float:right;width:500px}
 div#navigation{float:left;width:200px}
 div#extra{float:left;clear:left;width:200px}
 div#footer{clear:both;width:100%}
+*/

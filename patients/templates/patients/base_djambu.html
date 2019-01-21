@@ -6,10 +6,14 @@
 {% endblock %}
 
 {% block stylesheet %}
-  {% static 'patients/style.css' %}
+  {% static '/patients/css/style.css' %}
 {% endblock %}
 
 {% block body %}
+  <div class="brand"><h1>Djambu</h1></div>
   {% include './nav_bar.html' %}
-  {% block content %}{% endblock %}
+    <div class="main">
+    {% block content %}{% endblock %}
+  </div>
+
 {% endblock %}
