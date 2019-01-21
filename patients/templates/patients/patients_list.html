@@ -3,14 +3,25 @@
 
 {% block content %}
   {% include 'patients/panel_add_patient.html' %}
-  <ul>
+  <table class="table">
+    <tr>
+      <th>Cognome</th>
+      <th>Nome</th>
+      <th>Sesso</th>
+      <th>Data di nascita</th>
+      <th></th>
+      <th></th>
+    </tr>
+
     {% for p in patient_list %}
-      <li>
-        {{ p.last_name }} {{ p.first_name }}
-        {{ p.sex|capfirst }} {{ p.birth_date|date:'d/m/Y' }}
-        <a href="/patients_admin/patients/patient/{{ p.pk }}/change/">modifica</a>
-        <a href="{% url 'patients:patient_detail' p.pk %}">vedi</a>
-      </li>
+      <tr>
+        <td>{{ p.last_name }}</td>
+        <td>{{ p.first_name }}</td>
+        <td>{{ p.sex|capfirst }}</td>
+        <td>{{ p.birth_date|date:'d/m/Y' }}</td>
+        <td><a href="{% url 'patients:patient_detail' p.pk %}">vedi</a></td>
+        <td><a href="/patients_admin/patients/patient/{{ p.pk }}/change/">modifica</a></td>
+      </tr>
     {% endfor %}
-  </ul>
+  </table>
 {% endblock %}
