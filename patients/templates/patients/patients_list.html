@@ -2,27 +2,30 @@
 {% load admin_urls %}
 
 {% block content %}
-  <h2>Lista pazienti</h2>
-  <p>{% include 'patients/panel_add_patient.html' %}</p>
-  <table class="table">
-    <tr>
-      <th>Cognome</th>
-      <th>Nome</th>
-      <th>Sesso</th>
-      <th>Data di nascita</th>
-      <th></th>
-      <th></th>
-    </tr>
-
-    {% for p in patient_list %}
+  <div class="round-border-panel">
+    <h2>Lista pazienti</h2>
+    <p>{% include 'patients/panel_add_patient.html' %}</p>
+    <table class="table">
       <tr>
-        <td>{{ p.last_name }}</td>
-        <td>{{ p.first_name }}</td>
-        <td>{{ p.sex|capfirst }}</td>
-        <td>{{ p.birth_date|date:'d/m/Y' }}</td>
-        <td><a href="{% url 'patients:patient_detail' p.pk %}">vedi</a></td>
-        <td><a href="/patients_admin/patients/patient/{{ p.pk }}/change/">modifica</a></td>
+        <th>Nome</th>
+        <th>Sesso</th>
+        <th>Data di nascita</th>
+        <th></th>
+        <th></th>
       </tr>
-    {% endfor %}
-  </table>
+
+      {% for p in patient_list %}
+        <tr>
+          <td>
+            <a href="{% url 'patients:patient_detail' p.pk %}">
+              {{ p.last_name }} {{ p.first_name }}
+            </a>
+          </td>
+          <td>{{ p.sex|capfirst }}</td>
+          <td>{{ p.birth_date|date:'d/m/Y' }}</td>
+          <td><a href="/patients_admin/patients/patient/{{ p.pk }}/change/">modifica</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
 {% endblock %}

@@ -1,19 +1,18 @@
 {% extends './base.html' %}
-{% load static %}
 
 {% block title %}
   Djambu
 {% endblock %}
 
 {% block stylesheet %}
-  {% static '/patients/css/style.css' %}
+  {% load static %}
+  {% static 'patients/css/style.css' %}
 {% endblock %}
 
 {% block body %}
-  <div class="brand"><h1>Djambu</h1></div>
+  <h1>Djambu</h1>
   {% include './nav_bar.html' %}
     <div class="main">
-    {% block content %}{% endblock %}
-  </div>
-
+      {% block content %}{% endblock %}
+    </div>
 {% endblock %}
