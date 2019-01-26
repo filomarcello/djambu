@@ -2,6 +2,16 @@ from django.db import models
 from django import utils
 
 SEX_CHOICES = (('f', 'femmina'), ('m', 'maschio'))
+RATINGS = {'zero': '0',
+           'basso': 'b',
+           'limite inferiore': 'li',
+           'normale': 'n',
+           'limite superiore': 'ls',
+           'alto': 'a'}
+
+RATING_CHOICES = tuple((v, k) for v, k in RATINGS.items())
+RATING_CODES = tuple(RATINGS.keys())
+
 
 class Patient(models.Model): # TODO: make fields mandatory
     """Anagrafic data of a patient."""
@@ -94,16 +104,6 @@ class Exemption(models.Model):
         verbose_name_plural = 'esenzioni'
 
 
-class ClinicalElement(models.Model):
-    """Abstract base class for disorders, analyses and exams."""
-    date = models.DateField(verbose_name='data')
-    name = models.CharField(verbose_name='nome', max_length=250)
-    content = models.CharField(verbose_name='valore', max_length=1000)
-
-    class Meta:
-        abstract = True
-
-
 class Center(models.Model):
     """Wrap working center."""
     name = models.CharField(max_length=100, verbose_name='nome')
@@ -118,5 +118,51 @@ class Center(models.Model):
     class Meta:
         verbose_name = 'centro'
         verbose_name_plural = 'centri'
+
+
+class ClinicalElement(models.Model):
+    """Abstract base class for disorders, analyses and exams."""
+    date = models.DateField(verbose_name='data', default=utils.timezone.now)
+    name = models.CharField(verbose_name='nome', max_length=250)
+
+    class Meta:
+        abstract = True
+
+
+class Analysis(ClinicalElement):
+    """Blood, urine etc. analyses."""
+    value = models.FloatField(blank=True, null=True)
+    rate = models.CharField(max_length=2, choices=RATING_CHOICES,
+                                    blank=True, null=True)
+    lower_limit = models.FloatField(blank=True, null=True)
+    upper_limit = models.FloatField(blank=True, null=True)
+    _tolerance = 0.05
+
+    def rating(self):
+        """If not user rated, return the rating of this Analysis."""
+        if self.rate: return self.rate
+        if not self.lower_limit: return None
+        if not self.upper_limit: return None
+
+        range = self.upper_limit - self.lower_limit
+        delta = range * self._tolerance
+
+        if self.value == 0:
+            return RATINGS['zero']
+        elif self.value < self.lower_limit - delta:
+            return RATINGS['basso']
+        elif self.lower_limit - delta <= self.value <= self.lower_limit + delta:
+            return RATINGS['limite inferiore']
+        elif self.lower_limit + delta < self.value < self.upper_limit - delta:
+            return RATINGS['normale']
+        elif self.upper_limit - delta <= self.value <= self.upper_limit + delta:
+            return RATINGS['limite superiore']
+        elif self.value > self.upper_limit + delta:
+            return RATINGS['alto']
+
+
+
+
+
 
 
