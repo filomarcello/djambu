@@ -39,9 +39,10 @@ class ExemptionCodes(models.Model):
     """Chronic disease exemption code in Italian health system."""
     code = models.CharField(max_length=10, verbose_name='codice')
     name = models.CharField(max_length=200, verbose_name='nome')
+    short_name = models.CharField(max_length=10, verbose_name='abbreviazione')
 
     def __str__(self):
-        return self.code + ' ' + self.name
+        return self.code + ' (' + self.short_name + ')'
 
     class Meta:
         verbose_name = 'codice esenzione'
