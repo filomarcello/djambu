@@ -27,7 +27,7 @@ class Patient(models.Model): # TODO: make fields mandatory
 
     def __str__(self):
         return '{} {} - {} - {}'.format(self.last_name, self.first_name,
-                                        self.sex.capitalize(), self.birth_date)
+                                        self.sex, self.birth_date).title()
     # TODO: make birth date right format
 
     class Meta:
@@ -104,5 +104,19 @@ class ClinicalElement(models.Model):
         abstract = True
 
 
+class Center(models.Model):
+    """Wrap working center."""
+    name = models.CharField(max_length=100, verbose_name='nome')
+    municipality = models.CharField(verbose_name='comune', max_length=50)
+    address = models.CharField(max_length=200, blank=True, null=True,
+                               verbose_name='indirizzo')
+    stamp = models.ImageField(verbose_name='timbro', blank=True, null=True)
+
+    def __str__(self):
+        return self.name.title()
+
+    class Meta:
+        verbose_name = 'centro'
+        verbose_name_plural = 'centri'
 
 
