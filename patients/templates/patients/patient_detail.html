@@ -1,16 +1,37 @@
 {% extends './base_djambu.html' %}
 
 {% block content %}
-  <p>
-    Cognome {{ object.last_name|capfirst }} <br>
-    Nome {{ object.first_name|capfirst }} <br>
-    Sesso {{ object.sex|capfirst }} <br>
-    Data di nascita {{ object.birth_date|date:'d/m/Y' }} <br>
-  </p>
+  <div class="round-border-panel">
+    <div class="round-border-panel">
+      <h2>Paziente</h2>
+        <table class="table-no-background">
+          <tr>
+            <td>Cognome</td>
+            <td>{{ object.last_name|capfirst }}</td>
+          </tr>
+          <tr>
+            <td>Nome</td>
+            <td>{{ object.first_name|capfirst }}</td>
+          </tr>
+          <tr>
+            <td>Sesso</td>
+            <td>{{ object.sex|capfirst }}</td>
+          </tr>
+          <tr>
+            <td>Data di nascita</td>
+            <td>{{ object.birth_date|date:'d/m/Y' }}</td>
+          </tr>
+          <tr>
+            <td>Codice fiscale</td>
+            <td>{{ object.fiscal_code|default:'n.d.' }}</td>
+          </tr>
+        </table>
+     </div>
 
-  Visite <br>
- {% include 'patients/panel_exemptions.html' %} <br>
-  Piani terapeutici <br>
+    {% include 'patients/panel_exemptions.html' %}
+    Visite <br>
+    Piani terapeutici <br>
+  </div>
 
 {% endblock %}
 

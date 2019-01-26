@@ -4,7 +4,15 @@
   Djambu
 {% endblock %}
 
+{% block stylesheet %}
+  {% load static %}
+  {% static 'patients/css/style.css' %}
+{% endblock %}
+
 {% block body %}
+  <h1>Djambu</h1>
   {% include './nav_bar.html' %}
-  {% block content %}{% endblock %}
+    <div class="main">
+      {% block content %}{% endblock %}
+    </div>
 {% endblock %}
