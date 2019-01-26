@@ -9,7 +9,7 @@ RATINGS = {'zero': '0',
            'limite superiore': 'ls',
            'alto': 'a'}
 
-RATING_CHOICES = tuple((v, k) for v, k in RATINGS.items())
+RATING_CHOICES = tuple((k, v) for v, k in RATINGS.items())
 RATING_CODES = tuple(RATINGS.keys())
 
 
@@ -131,11 +131,13 @@ class ClinicalElement(models.Model):
 
 class Analysis(ClinicalElement):
     """Blood, urine etc. analyses."""
-    value = models.FloatField(blank=True, null=True)
-    rate = models.CharField(max_length=2, choices=RATING_CHOICES,
-                                    blank=True, null=True)
-    lower_limit = models.FloatField(blank=True, null=True)
-    upper_limit = models.FloatField(blank=True, null=True)
+    value = models.FloatField(blank=True, null=True, verbose_name='valore')
+    rate = models.CharField(max_length=2, choices=RATING_CHOICES, blank=True,
+                            verbose_name='valutazione', null=True)
+    lower_limit = models.FloatField(blank=True, null=True,
+                                    verbose_name='limite inferiore')
+    upper_limit = models.FloatField(blank=True, null=True,
+                                    verbose_name='limite superiore')
     _tolerance = 0.05
 
     def rating(self):
@@ -160,7 +162,12 @@ class Analysis(ClinicalElement):
         elif self.value > self.upper_limit + delta:
             return RATINGS['alto']
 
+    def __str__(self):
+        return '{} {} {}'.format(self.date, self.name, self.value) # TODO: format date
 
+    class Meta:
+        verbose_name = 'analisi'
+        verbose_name_plural = 'analisi'
 
 
 

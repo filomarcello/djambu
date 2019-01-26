@@ -8,6 +8,7 @@ admin.site.register(ExemptionCodes)
 admin.site.register(Exemption)
 admin.site.register(Place)
 admin.site.register(Center)
+admin.site.register(Analysis)
 
 # custom admin for patients app
 class PatientsAdmin(AdminSite):
@@ -19,4 +20,5 @@ class PatientsAdmin(AdminSite):
 patients_admin = PatientsAdmin(name='patients_admin')
 patients_admin.register(Patient)
 patients_admin.register(Exemption)
+patients_admin.register(Analysis)
 
