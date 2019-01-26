@@ -17,6 +17,12 @@ class Patient(models.Model): # TODO: make fields mandatory
                                verbose_name='indirizzo')
 
     def save(self, *args, **kwargs):
+        self.last_name = self.last_name.lower()
+        self.first_name = self.first_name.lower()
+        if self.birth_place:
+            self.birth_place = self.birth_place.lower()
+        if self.fiscal_code:
+            self.fiscal_code = self.fiscal_code.upper()
         super().save(*args, **kwargs)
 
     def __str__(self):
