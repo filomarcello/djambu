@@ -166,9 +166,10 @@ class Analysis(ClinicalElement):
         elif self.value > self.upper_limit + delta:
             return RATINGS['alto']
 
-    def clean(self):
+    def full_clean(self, exclude=None, validate_unique=True):
         """Value or rate need to be set."""
-        if self.value and self.rate:
+        super().full_clean(exclude=None, validate_unique=True)
+        if self.value or self.rate:
             return
         raise ValidationError('Either value or rate must be set.')
 
