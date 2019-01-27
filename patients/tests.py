@@ -35,6 +35,11 @@ class AnalysisTestCase(TestCase):
                 lower_limit=50,
                 upper_limit=150,
         )
+        Analysis.objects.create(
+                name='puzzotropina',
+                value=100,
+                rate=RATINGS['normale']
+        )
 
     def test_default_creation(self):
         tsh = Analysis.objects.get(name='TSH')
@@ -85,5 +90,14 @@ class AnalysisTestCase(TestCase):
         for value, rate in zip(VALUES, RATINGS.values()):
             mt.value = value
             self.assertEqual(mt.rating(), rate)
+
+    def test_str_return(self):
+        pt = Analysis.objects.get(name='puzzotropina')
+        self.assertIn('100', str(pt))
+        self.assertNotEqual(str(pt)[-1], 'n')
+        pt.value = None
+        self.assertNotIn('100', str(pt))
+        self.assertEqual(str(pt)[-1], 'n')
+
 
 

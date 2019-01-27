@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 from django import utils
 
@@ -8,7 +10,6 @@ RATINGS = {'zero': '0',
            'normale': 'n',
            'limite superiore': 'ls',
            'alto': 'a'}
-
 RATING_CHOICES = tuple((k, v) for v, k in RATINGS.items())
 RATING_CODES = tuple(RATINGS.keys())
 
@@ -131,13 +132,16 @@ class ClinicalElement(models.Model):
 
 class Analysis(ClinicalElement):
     """Blood, urine etc. analyses."""
-    value = models.FloatField(blank=True, null=True, verbose_name='valore')
+    value = models.FloatField(blank=True, null=True, verbose_name='valore',
+                              validators=[MinValueValidator(limit_value=0),])
     rate = models.CharField(max_length=2, choices=RATING_CHOICES, blank=True,
                             verbose_name='valutazione', null=True)
     lower_limit = models.FloatField(blank=True, null=True,
                                     verbose_name='limite inferiore')
     upper_limit = models.FloatField(blank=True, null=True,
                                     verbose_name='limite superiore')
+    unit = models.CharField(max_length=10, verbose_name='unità di misura',
+                            blank=True, null=True)
     _tolerance = 0.05
 
     def rating(self):
@@ -162,8 +166,17 @@ class Analysis(ClinicalElement):
         elif self.value > self.upper_limit + delta:
             return RATINGS['alto']
 
+    def clean(self):
+        """Value or rate need to be set."""
+        if self.value and self.rate:
+            return
+        raise ValidationError('Either value or rate must be set.')
+
     def __str__(self):
-        return '{} {} {}'.format(self.date, self.name, self.value) # TODO: format date
+        form = str(self.date) + ' ' + self.name + ' ' # TODO: format date
+        if self.value:
+            return form + str(self.value)
+        return form + self.rate
 
     class Meta:
         verbose_name = 'analisi'
