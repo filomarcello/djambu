@@ -27,14 +27,13 @@ class Patient(models.Model): # TODO: make fields mandatory
     address = models.CharField(max_length=200, blank=True, null=True,
                                verbose_name='indirizzo')
 
-    def save(self, *args, **kwargs):
+    def clean(self):
         self.last_name = self.last_name.lower()
         self.first_name = self.first_name.lower()
         if self.birth_place:
             self.birth_place = self.birth_place.lower()
         if self.fiscal_code:
             self.fiscal_code = self.fiscal_code.upper()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return '{} {} - {} - {}'.format(self.last_name, self.first_name,
@@ -92,13 +91,12 @@ class Exemption(models.Model):
     def __str__(self):
         return str(self.exemption) + ' ' + self.name
 
-    def save(self, *args, **kwargs):
+    def clean(self, *args, **kwargs):
         # if patient linked, populate fields with its data
         if self.patient:
             self.name = self.patient.last_name + ' ' + self.patient.first_name
             self.birth_date = self.patient.birth_date
             self.birth_place = self.patient.birth_place
-        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'esenzione'
@@ -166,9 +164,15 @@ class Analysis(ClinicalElement):
         elif self.value > self.upper_limit + delta:
             return RATINGS['alto']
 
-    def full_clean(self, exclude=None, validate_unique=True):
+    # def full_clean(self, exclude=None, validate_unique=True):
+    #     """Value or rate need to be set."""
+    #     super().full_clean(exclude=None, validate_unique=True)
+    #     if self.value or self.rate:
+    #         return
+    #     raise ValidationError('Either value or rate must be set.')
+
+    def clean(self):
         """Value or rate need to be set."""
-        super().full_clean(exclude=None, validate_unique=True)
         if self.value or self.rate:
             return
         raise ValidationError('Either value or rate must be set.')
