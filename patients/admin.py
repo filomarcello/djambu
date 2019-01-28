@@ -10,6 +10,19 @@ admin.site.register(Place)
 admin.site.register(Center)
 admin.site.register(Analysis)
 
+# admin models
+class AnalysisAdminModel(admin.ModelAdmin):
+    radio_fields = {'rate': admin.HORIZONTAL}
+
+
+class PatientsAdminModel(admin.ModelAdmin):
+    radio_fields = {'sex': admin.HORIZONTAL}
+
+
+class ExemptionAdminModel(admin.ModelAdmin):
+    radio_fields = {'signature_place': admin.HORIZONTAL}
+
+
 # custom admin for patients app
 class PatientsAdmin(AdminSite):
     site_header = 'Djambu'
@@ -18,7 +31,7 @@ class PatientsAdmin(AdminSite):
     index_title = 'Amministrazione sito'
 
 patients_admin = PatientsAdmin(name='patients_admin')
-patients_admin.register(Patient)
-patients_admin.register(Exemption)
-patients_admin.register(Analysis)
+patients_admin.register(Patient, PatientsAdminModel)
+patients_admin.register(Exemption, ExemptionAdminModel)
+patients_admin.register(Analysis, AnalysisAdminModel)
 
