@@ -1,6 +1,10 @@
+import io
+
+from django.http import FileResponse
 from django.views.generic import TemplateView, ListView, DetailView, \
     FormView
 from django.urls import reverse
+from reportlab.pdfgen import canvas
 from .forms import RapidExemptionForm
 from .models import Patient, Exemption
 
@@ -54,7 +58,13 @@ class RapidAddExemptionView(FormView):
         return super().form_valid(form)
 
 
-
+def print_exemption_pdf(request):
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer)
+    p.drawString(100, 100, "Prova PDF.")
+    p.showPage()
+    p.save()
+    return FileResponse(buffer, as_attachment=True, filename='prova.pdf')
 
 
     

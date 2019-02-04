@@ -164,13 +164,6 @@ class Analysis(ClinicalElement):
         elif self.value > self.upper_limit + delta:
             return RATINGS['alto']
 
-    # def full_clean(self, exclude=None, validate_unique=True):
-    #     """Value or rate need to be set."""
-    #     super().full_clean(exclude=None, validate_unique=True)
-    #     if self.value or self.rate:
-    #         return
-    #     raise ValidationError('Either value or rate must be set.')
-
     def clean(self):
         """Value or rate need to be set."""
         if self.value or self.rate:
@@ -178,10 +171,14 @@ class Analysis(ClinicalElement):
         raise ValidationError('Either value or rate must be set.')
 
     def __str__(self):
+        form = '{date} {name} {value} {unit} {rate}'
         form = str(self.date) + ' ' + self.name + ' ' # TODO: format date
         if self.value:
-            return form + str(self.value)
-        return form + self.rate
+            form + str(self.value)
+            if self.unit:
+                form = ' ' + form + self.unit
+            return
+        return form + '(' + self.rating() + ')'
 
     class Meta:
         verbose_name = 'analisi'
