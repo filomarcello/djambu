@@ -17,6 +17,6 @@ urlpatterns = [
          name='rapid_add_exemption'),
     path('list/', PatientsListView.as_view(),
          name='patients_list'),
-    path('prova_pdf/', print_exemption_pdf,
+    path('prova_pdf/<int:pk>', PDFResponseView.as_view(),
          name='exemption_pdf')
 ]
