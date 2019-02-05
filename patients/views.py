@@ -5,9 +5,10 @@ from django.views.generic import TemplateView, ListView, DetailView, \
     FormView
 from django.urls import reverse
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.pdfgen import canvas
-from reportlab.platypus import SimpleDocTemplate, Spacer
+from reportlab.platypus import SimpleDocTemplate, Spacer, Paragraph
 
 from .forms import RapidExemptionForm
 from .models import Patient, Exemption
@@ -65,10 +66,14 @@ class RapidAddExemptionView(FormView):
 def print_exemption_pdf(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="prova.pdf'
-    p = canvas.Canvas(response)
-    p.drawString(100, 100, "Prova PDF.")
-    p.showPage()
-    p.save()
+    doc = SimpleDocTemplate(response)
+    normal = ParagraphStyle(name='normal', fontName='Helvetica', fontSize=12)
+    story = [
+        Paragraph("Ciao pipposi!!!", normal),
+        Spacer(1, 5*cm),
+        Paragraph("Mo funzia!", normal)
+    ]
+    doc.build(story)
     return response
 
 
