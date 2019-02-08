@@ -1,17 +1,12 @@
-import io
-
 from django.http import FileResponse, HttpResponse
 from django.views.generic import TemplateView, ListView, DetailView, \
     FormView
 from django.urls import reverse
-from django.views.generic.base import TemplateResponseMixin, View
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
-from reportlab.pdfgen import canvas
 from reportlab.platypus import SimpleDocTemplate, Spacer, Paragraph
-
 from .forms import RapidExemptionForm
 from .models import Patient, Exemption
 
@@ -66,20 +61,6 @@ class RapidAddExemptionView(FormView):
         return super().form_valid(form)
 
 
-def print_exemption_pdf(request):
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="prova.pdf'
-    doc = SimpleDocTemplate(response)
-    normal = ParagraphStyle(name='normal', fontName='Helvetica', fontSize=12)
-    story = [
-        Paragraph("Ciao pipposi!!!", normal),
-        Spacer(1, 5*cm),
-        Paragraph("Mo funzia!", normal)
-    ]
-    doc.build(story)
-    return response
-
-
 class PDFResponseView(DetailView):
 
     model = Exemption
@@ -94,11 +75,11 @@ class PDFResponseView(DetailView):
         doc = SimpleDocTemplate(response, pageSize=A4)
         name = self.object.name.upper()
         birth_place = self.object.birth_place.capitalize()
-        birth_date = self.object.birth_date
+        birth_date = self.object.birth_date.strftime("%d/%m/%Y")
         exemption_name = self.object.exemption.name.title()
         exemption_code = self.object.exemption.code
         place = self.object.signature_place.municipality.capitalize()
-        date = self.object.signature_date
+        date = self.object.signature_date.strftime("%d/%m/%Y")
 
         normal = ParagraphStyle(name='normal', fontName='Helvetica', fontSize=12)
         label = ParagraphStyle(name='label', parent=normal, fontName='Helvetica-Bold',
@@ -140,8 +121,6 @@ class PDFResponseView(DetailView):
                                "cui all’Allegato 1-II parte del D.M. 329/99 come "
                                "modificato dal D.M. 296/2001).", notes))
 
-        # story.append(Spacer(1, 0.5*cm))
-
         story.append(Paragraph(f'<i>{exemption_name}</i>', exemption))
 
         story.append(Paragraph("(N.B.: in caso di IPERTENSIONE ARTERIOSA specificare "
@@ -170,6 +149,6 @@ class PDFResponseView(DetailView):
 
         doc.build(story)
 
-        return response
+        return response # TODO: add title of the pdf document
 
     
