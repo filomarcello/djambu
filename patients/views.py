@@ -60,6 +60,7 @@ class RapidAddExemptionView(FormView):
         sign_dat = form.cleaned_data['signature_date']
         e = Exemption(patient=pat, exemption=exe, signature_place=sign_pla,
                   signature_date=sign_dat)
+        e.full_clean()
         e.save()
         self.success_url = reverse('patients:patient_detail', args=[pat.pk])
         return super().form_valid(form)
@@ -91,13 +92,13 @@ class PDFResponseView(DetailView):
         response['Content-Disposition'] = 'attachment; filename="prova{}.pdf'.format(self.object.pk)
 
         doc = SimpleDocTemplate(response, pageSize=A4)
-        name = 'polletto frittolino'.upper()
-        birth_place = 'bergamo'.capitalize()
-        birth_date = '28/01/2018'
-        exemption_name = "tiroidite linfocitaria cronica".title()
-        exemption_code = '056.245.2'
-        place = 'bergamo'.capitalize()
-        date = '03/02/2019'
+        name = self.object.name.upper()
+        birth_place = self.object.birth_place.capitalize()
+        birth_date = self.object.birth_date
+        exemption_name = self.object.exemption.name.title()
+        exemption_code = self.object.exemption.code
+        place = self.object.signature_place.municipality.capitalize()
+        date = self.object.signature_date
 
         normal = ParagraphStyle(name='normal', fontName='Helvetica', fontSize=12)
         label = ParagraphStyle(name='label', parent=normal, fontName='Helvetica-Bold',

@@ -91,7 +91,7 @@ class Exemption(models.Model):
     def __str__(self):
         return str(self.exemption) + ' ' + self.name
 
-    def clean(self, *args, **kwargs):
+    def clean(self):
         # if patient linked, populate fields with its data
         if self.patient:
             self.name = self.patient.last_name + ' ' + self.patient.first_name
