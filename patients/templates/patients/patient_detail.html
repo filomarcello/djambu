@@ -7,7 +7,9 @@
         <table class="table-no-background">
           <tr>
             <td>Cognome</td>
-            <td>{{ object.last_name|capfirst }}</td>
+            <td><a href="/patients_admin/patients/patient/{{ object.pk }}/change/">
+              {{ object.last_name|capfirst }}
+            </a></td>
           </tr>
           <tr>
             <td>Nome</td>
@@ -20,6 +22,11 @@
           <tr>
             <td>Data di nascita</td>
             <td>{{ object.birth_date|date:'d/m/Y' }}</td>
+          </tr>
+          <tr>
+           <tr>
+            <td>Luogo di nascita</td>
+            <td>{{ object.birth_place|capfirst }}</td>
           </tr>
           <tr>
             <td>Codice fiscale</td>
