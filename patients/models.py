@@ -119,6 +119,11 @@ class Center(models.Model):
         verbose_name_plural = 'centri'
 
 
+class AnalysisManager(models.Manager):
+
+    def text_to_analysis(self, text: str):
+        pass
+
 class ClinicalElement(models.Model):
     """Abstract base class for disorders, analyses and exams."""
     date = models.DateField(verbose_name='data', default=utils.timezone.now)
@@ -140,6 +145,7 @@ class Analysis(ClinicalElement):
                                     verbose_name='limite superiore')
     unit = models.CharField(max_length=10, verbose_name='unità di misura',
                             blank=True, null=True)
+    objects = AnalysisManager()
     _tolerance = 0.05
 
     def rating(self):
@@ -174,11 +180,12 @@ class Analysis(ClinicalElement):
         form = '{date} {name} {value} {unit} {rate}'
         form = str(self.date) + ' ' + self.name + ' ' # TODO: format date
         if self.value:
-            form + str(self.value)
+            form = form + ' ' + str(self.value)
             if self.unit:
-                form = ' ' + form + self.unit
-            return
-        return form + '(' + self.rating() + ')'
+                form = form + ' ' + self.unit
+        else:
+            form = form + self.rating()
+        return form
 
     class Meta:
         verbose_name = 'analisi'

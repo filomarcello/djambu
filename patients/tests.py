@@ -1,3 +1,4 @@
+from datetime import date
 from django.test import TestCase
 from patients.models import *
 from random import random
@@ -100,4 +101,23 @@ class AnalysisTestCase(TestCase):
         self.assertEqual(str(pt)[-1], 'n')
 
 
-
+# class TextToAnalysisTestCase(TestCase):
+#     DATE = date.today()
+#     ONE_ANALYTE_RATE_TEXT = 'TSH n'
+#     ONE_ANALYTE_RATE_INST = Analysis(date=DATE, name='tsh', rate='n')
+#
+#     def setUp(self):
+#         self.translator = TextToAnalysisTranslator()
+#
+#     def test_one_analyte_rate(self):
+#         a1 = self.translator.translate(self.ONE_ANALYTE_RATE_TEXT)
+#         self.assertTrue(self.eq_analysis(a1, self.ONE_ANALYTE_RATE_INST))
+#
+#     def eq_analysis(self, first: Analysis, second: Analysis):
+#         if first.value != second.value: return False
+#         if first.unit != second.unit: return False
+#         if first.lower_limit != second.lower_limit: return False
+#         if first.upper_limit != second.upper_limit: return False
+#         if first.date != second.date: return False
+#         if first.name!= second.name: return False
+#         return True
