@@ -101,23 +101,29 @@ class AnalysisTestCase(TestCase):
         self.assertEqual(str(pt)[-1], 'n')
 
 
-# class TextToAnalysisTestCase(TestCase):
-#     DATE = date.today()
-#     ONE_ANALYTE_RATE_TEXT = 'TSH n'
-#     ONE_ANALYTE_RATE_INST = Analysis(date=DATE, name='tsh', rate='n')
-#
-#     def setUp(self):
-#         self.translator = TextToAnalysisTranslator()
-#
-#     def test_one_analyte_rate(self):
-#         a1 = self.translator.translate(self.ONE_ANALYTE_RATE_TEXT)
-#         self.assertTrue(self.eq_analysis(a1, self.ONE_ANALYTE_RATE_INST))
-#
-#     def eq_analysis(self, first: Analysis, second: Analysis):
-#         if first.value != second.value: return False
-#         if first.unit != second.unit: return False
-#         if first.lower_limit != second.lower_limit: return False
-#         if first.upper_limit != second.upper_limit: return False
-#         if first.date != second.date: return False
-#         if first.name!= second.name: return False
-#         return True
+class TextToAnalysisTestCase(TestCase):
+
+    def setUp(self):
+        self.DATE = date.today()
+        self.START_STRING = f'- {self.DATE} '
+        self.ONE_ANALYTE_RATE = self.START_STRING + 'TSH n'
+        self.ONE_ANALYTE_VALUE = self.START_STRING + 'TSH 3.15'
+        self.one_analyte_rate = Analysis(date=self.DATE, name='tsh', rate='n')
+        self.one_analyte_value = Analysis(date=self.DATE, name='tsh', value='3.15')
+
+    def test_one_analyte_rate(self):
+        analysis = Analysis.objects.text_to_analysis(self.ONE_ANALYTE_RATE)
+        self.assertTrue(self.eq_analysis(analysis, self.one_analyte_rate))
+
+    def test_one_analyte_value(self):
+        analysis = Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE)
+        self.assertTrue(self.eq_analysis(analysis, self.one_analyte_value))
+
+    def eq_analysis(self, first: Analysis, second: Analysis):
+        if first.value != second.value: return False
+        if first.unit != second.unit: return False
+        if first.lower_limit != second.lower_limit: return False
+        if first.upper_limit != second.upper_limit: return False
+        if first.date != second.date: return False
+        if first.name!= second.name: return False
+        return True
