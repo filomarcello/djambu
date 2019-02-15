@@ -104,7 +104,7 @@ class AnalysisTestCase(TestCase):
 class TextToAnalysisTestCase(TestCase):
 
     def setUp(self):
-        self.DATE = date.today()
+        self.DATE = '01/01/2019'
         self.START_STRING = f'- {self.DATE} '
         self.ONE_ANALYTE_RATE = self.START_STRING + 'TSH n'
         self.ONE_ANALYTE_VALUE = self.START_STRING + 'TSH 3.15'
@@ -125,5 +125,6 @@ class TextToAnalysisTestCase(TestCase):
         if first.lower_limit != second.lower_limit: return False
         if first.upper_limit != second.upper_limit: return False
         if first.date != second.date: return False
-        if first.name!= second.name: return False
+        if first.name != second.name: return False
+        if first.rate != second.rate: return False
         return True

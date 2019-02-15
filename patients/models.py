@@ -123,6 +123,9 @@ class Center(models.Model):
 
 class AnalysisManager(models.Manager):
 
+    EMPTY_ANALYSIS_DATA = {'value': None, 'rate': None, 'low': None,
+                           'high': None}
+
     def text_to_analysis(self, text: str):
         # clean the string
         text = self.clean_text(text)
