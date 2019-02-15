@@ -128,6 +128,20 @@ class ClinicalElement(models.Model):
         abstract = True
 
 
+class AnalysisName(models.Model):
+
+    name = models.CharField(verbose_name='nome', max_length=100)
+    short_name = models.CharField(verbose_name='abbreviazione', max_length=25)
+
+    def __str__(self):
+        return f"{self.name} ({self.short_name})"
+
+    class Meta:
+        verbose_name = 'tipo analisi'
+        verbose_name_plural = "tipi analisi"
+
+
+
 class Analysis(ClinicalElement):
     """Blood, urine etc. analyses."""
     value = models.FloatField(blank=True, null=True, verbose_name='valore',

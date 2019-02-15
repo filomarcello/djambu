@@ -9,6 +9,7 @@ admin.site.register(Exemption)
 admin.site.register(Place)
 admin.site.register(Center)
 admin.site.register(Analysis)
+admin.site.register(AnalysisName)
 
 # admin models
 class AnalysisAdminModel(admin.ModelAdmin):
