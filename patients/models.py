@@ -20,8 +20,7 @@ class Patient(models.Model): # TODO: make fields mandatory
     first_name = models.CharField(max_length=50, verbose_name='nome')
     sex = models.CharField(max_length=1, choices=SEX_CHOICES, verbose_name='sesso')
     birth_date = models.DateField(verbose_name='data di nascita')
-    birth_place = models.CharField(max_length=100, blank=True, null=True,
-                                   verbose_name='luogo di nascita')
+    birth_place = models.CharField(max_length=100, verbose_name='luogo di nascita')
     fiscal_code = models.CharField(max_length=16, blank=True, null=True,
                                    verbose_name='codice fiscale')
     address = models.CharField(max_length=200, blank=True, null=True,
@@ -141,9 +140,10 @@ class AnalysisName(models.Model):
         verbose_name_plural = "tipi analisi"
 
 
-
 class Analysis(ClinicalElement):
     """Blood, urine etc. analyses."""
+    name = models.ForeignKey(AnalysisName, verbose_name='nome',
+                             on_delete=models.CASCADE)
     value = models.FloatField(blank=True, null=True, verbose_name='valore',
                               validators=[MinValueValidator(limit_value=0),])
     rate = models.CharField(max_length=2, choices=RATING_CHOICES, blank=True,
@@ -186,12 +186,12 @@ class Analysis(ClinicalElement):
 
     def __str__(self):
         form = '{date} {name} {value} {unit} {rate}'
-        form = str(self.date) + ' ' + self.name + ' ' # TODO: format date
+        form = str(self.date) + ' ' + self.name.short_name + ' ' # TODO: format date
         if self.value:
-            form + str(self.value)
+            form = form + str(self.value)
             if self.unit:
                 form = ' ' + form + self.unit
-            return
+            return form
         return form + '(' + self.rating() + ')'
 
     class Meta:
