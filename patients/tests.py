@@ -59,31 +59,79 @@ class AnalysisTestCase(TestCase):
         self.assertEqual(pth.rating(), 'n')
 
 
-
 class TextToAnalysisTestCase(TestCase):
 
     def setUp(self):
-        self.DATE = '01/01/2019'
-        self.START_STRING = f'- {self.DATE} '
-        self.ONE_ANALYTE_RATE = self.START_STRING + 'TSH n'
-        self.ONE_ANALYTE_VALUE = self.START_STRING + 'TSH 3.15'
-        self.one_analyte_rate = Analysis(date=self.DATE, name='tsh', rate='n')
-        self.one_analyte_value = Analysis(date=self.DATE, name='tsh', value='3.15')
+        DATE = '01/01/2019'
+        START_STRING = f'- {DATE} '
+        TSH_ANALYTE = 'TSH'
+        self.ONE_ANALYTE_RATE = START_STRING + TSH_ANALYTE + ' n'
+        FSH_ANALYTE = 'FSH'
+        self.ONE_ANALYTE_VALUE = START_STRING + FSH_ANALYTE + ' 3.15'
+        TESTO_ANALYTE = 'testosterone'
+        self.ONE_ANALYTE_VALUE_UNIT = START_STRING + TESTO_ANALYTE + ' 5.5 ng/dl'
+        FT4_ANALYTE = 'FT4'
+        self.ONE_ANALYTE_VALUE_UNIT_RANGE = START_STRING + FT4_ANALYTE + " 1.2 mmol/L (0.7-1.9)"
+        FT3_ANALYTE = 'FT3'
+        self.ONE_ANALYTE_VALUE_RANGE = START_STRING + FT3_ANALYTE + " 3.2 (2.4-6.2)"
+        CORTISOL_ANALYTE = 'corti'
+        self.ONE_ANALYTE_VALUE_HIGH_RANGE = START_STRING + CORTISOL_ANALYTE + " 19.1 (<22)"
+        ACTH_ANALYTE = 'ACTH'
+        self.ONE_ANALYTE_VALUE_LOW_RANGE = START_STRING + ACTH_ANALYTE + " 0.0 (>10)"
+
+        self.MULTIPLE_ANALYTES = START_STRING + " TSH 3.15, FT4 n, FT3 n, corti 23.5 (<22.0), testo 2.4 ng/ml"
+
+        AnalysisName.objects.create(name='tireotropina', short_name='TSH')
+        AnalysisName.objects.create(name='levotiroxina libera', short_name='FT4')
+        AnalysisName.objects.create(name='testosterone', short_name='testo')
+        AnalysisName.objects.create(name='follitropina', short_name='FSH')
+        AnalysisName.objects.create(name='tironina libera', short_name='FT3')
+        AnalysisName.objects.create(name='cortisolo', short_name='corti')
+        AnalysisName.objects.create(name='corticotropina', short_name='ACTH')
 
     def test_one_analyte_rate(self):
-        analysis = Analysis.objects.text_to_analysis(self.ONE_ANALYTE_RATE)
-        self.assertTrue(self.eq_analysis(analysis, self.one_analyte_rate))
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_RATE)
+        analysys = Analysis.objects.get(name__short_name='TSH')
+        self.assertEqual(analysys.rate, 'n')
 
     def test_one_analyte_value(self):
-        analysis = Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE)
-        self.assertTrue(self.eq_analysis(analysis, self.one_analyte_value))
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE)
+        analysys = Analysis.objects.get(name__short_name='FSH')
+        self.assertEqual(analysys.value, 3.15)
 
-    def eq_analysis(self, first: Analysis, second: Analysis):
-        if first.value != second.value: return False
-        if first.unit != second.unit: return False
-        if first.lower_limit != second.lower_limit: return False
-        if first.upper_limit != second.upper_limit: return False
-        if first.date != second.date: return False
-        if first.name != second.name: return False
-        if first.rate != second.rate: return False
-        return True
+    def test_one_analyte_value_unit(self):
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_UNIT)
+        analysis = Analysis.objects.get(name__short_name='testo')
+        self.assertEqual(analysis.unit, 'ng/dl')
+
+    def test_one_analyte_value_unit_range(self):
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_UNIT_RANGE)
+        analysis = Analysis.objects.get(name__short_name='FT4')
+        self.assertEqual(analysis.lower_limit, 0.7)
+        self.assertEqual(analysis.upper_limit, 1.9)
+
+    def test_one_analyte_value_range(self):
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_RANGE)
+        analysis = Analysis.objects.get(name__short_name='FT3')
+        self.assertEqual(analysis.lower_limit, 2.4)
+        self.assertEqual(analysis.upper_limit, 6.2)
+
+    def test_one_analyte_value_range_high(self):
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_HIGH_RANGE)
+        analysis = Analysis.objects.get(name__short_name='corti')
+        self.assertEqual(analysis.upper_limit, 22.0)
+        self.assertIsNone(analysis.lower_limit)
+
+    def test_one_analyte_value_range_low(self):
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_LOW_RANGE)
+        analysis = Analysis.objects.get(name__short_name='ACTH')
+        self.assertEqual(analysis.lower_limit, 10.0)
+        self.assertIsNone(analysis.upper_limit)
+
+    def test_multiple_analytes(self):
+        Analysis.objects.text_to_analysis(self.MULTIPLE_ANALYTES)
+        print(Analysis.objects.all())
+
+
+
+

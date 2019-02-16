@@ -29,7 +29,7 @@ class PatientsAdmin(AdminSite):
     site_header = 'Djambu'
     site_title = 'djambu'
     site_url = '/patients/'
-    index_title = 'Amministrazione sito'
+    index_title = 'amministrazione sito'
 
 patients_admin = PatientsAdmin(name='patients_admin')
 patients_admin.register(Patient, PatientsAdminModel)

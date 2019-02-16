@@ -1,6 +1,8 @@
+import datetime
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models import Q
 from django import utils
 
 SEX_CHOICES = (('f', 'femmina'), ('m', 'maschio'))
@@ -120,8 +122,8 @@ class Center(models.Model):
 
 class AnalysisManager(models.Manager):
 
-    EMPTY_ANALYSIS_DATA = {'value': None, 'rate': None, 'low': None,
-                           'high': None}
+    EMPTY_ANALYSIS_DATA = {'value': None, 'rate': None, 'lower_limit': None,
+                           'upper_limit': None, 'name': None, 'unit': None}
 
     def text_to_analysis(self, text: str):
         # clean the string
@@ -133,7 +135,13 @@ class AnalysisManager(models.Manager):
         # get analyses data
         analyses_data = self.extract_analysis_data(analysis_tokens)
         # build Analysis objects
-        return analyses_data
+        analyses = AnalysisName.objects.all()
+        for data in analyses_data:
+            analysis = data.pop('name')
+            analysis_names = analyses.filter(name__startswith=analysis) | \
+                analyses.filter(short_name__startswith=analysis)
+            analysis_name = analysis_names.first()
+            self.create(name=analysis_name, **data)
 
     def clean_text(self, text: str) -> str:
         text = text.strip()
@@ -170,7 +178,6 @@ class AnalysisManager(models.Manager):
         for token in analysis_tokens:
             analyte, content = token.split(' ', maxsplit=1)
             data = self.extract_data(content)
-            analyte = self.extract_analyte(analyte.lower())
             data['name'] = analyte
             analysis_data.append(data)
         return analysis_data
@@ -187,16 +194,16 @@ class AnalysisManager(models.Manager):
         if len(tokens) > 1:
             if self.is_range(tokens[1]):
                 low, high = self.process_range(tokens[1])
-                content['low'] = low
-                content['high'] = high
+                content['lower_limit'] = low
+                content['upper_limit'] = high
             else:
-                content['units'] = tokens[1]
+                content['unit'] = tokens[1]
         # control the third token to find range
         if len(tokens) > 2:
             if self.is_range(tokens[2]):
                 low, high = self.process_range(tokens[2])
-                content['low'] = low
-                content['high'] = high
+                content['lower_limit'] = low
+                content['upper_limit'] = high
         return content
 
     def is_value(self, token: str):
@@ -223,12 +230,6 @@ class AnalysisManager(models.Manager):
             low = float(low)
             high = float(high)
         return low, high
-
-    def extract_analyte(self, analyte: str) -> str:
-        for a in self.ANALYSES_LIST:
-            if a.startswith(analyte):
-                return a
-        return self.UNDEFINED
 
 
 class ClinicalElement(models.Model):
@@ -303,7 +304,7 @@ class Analysis(ClinicalElement):
         if self.value:
             form = form + str(self.value)
             if self.unit:
-                form = ' ' + form + self.unit
+                form = ' ' + form + ' ' + self.unit
             return form
         return form + '(' + self.rating() + ')'
 
