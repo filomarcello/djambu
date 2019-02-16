@@ -150,5 +150,6 @@ class PDFResponseView(DetailView):
         doc.build(story)
 
         return response # TODO: add title of the pdf document
+                        # TODO: rewrite better this function
 
     

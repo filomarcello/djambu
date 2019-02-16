@@ -1,3 +1,4 @@
+from datetime import date
 from django.test import TestCase
 from patients.models import *
 from random import random
@@ -59,4 +60,30 @@ class AnalysisTestCase(TestCase):
 
 
 
+class TextToAnalysisTestCase(TestCase):
 
+    def setUp(self):
+        self.DATE = '01/01/2019'
+        self.START_STRING = f'- {self.DATE} '
+        self.ONE_ANALYTE_RATE = self.START_STRING + 'TSH n'
+        self.ONE_ANALYTE_VALUE = self.START_STRING + 'TSH 3.15'
+        self.one_analyte_rate = Analysis(date=self.DATE, name='tsh', rate='n')
+        self.one_analyte_value = Analysis(date=self.DATE, name='tsh', value='3.15')
+
+    def test_one_analyte_rate(self):
+        analysis = Analysis.objects.text_to_analysis(self.ONE_ANALYTE_RATE)
+        self.assertTrue(self.eq_analysis(analysis, self.one_analyte_rate))
+
+    def test_one_analyte_value(self):
+        analysis = Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE)
+        self.assertTrue(self.eq_analysis(analysis, self.one_analyte_value))
+
+    def eq_analysis(self, first: Analysis, second: Analysis):
+        if first.value != second.value: return False
+        if first.unit != second.unit: return False
+        if first.lower_limit != second.lower_limit: return False
+        if first.upper_limit != second.upper_limit: return False
+        if first.date != second.date: return False
+        if first.name != second.name: return False
+        if first.rate != second.rate: return False
+        return True
