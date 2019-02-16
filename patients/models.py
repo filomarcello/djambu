@@ -185,7 +185,6 @@ class Analysis(ClinicalElement):
         raise ValidationError('Either value or rate must be set.')
 
     def __str__(self):
-        form = '{date} {name} {value} {unit} {rate}'
         form = str(self.date) + ' ' + self.name.short_name + ' ' # TODO: format date
         if self.value:
             form = form + str(self.value)
