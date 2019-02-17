@@ -315,15 +315,18 @@ class Analysis(ClinicalElement):
 
 class BMD(ClinicalElement):
     name = models.CharField(max_length=3, default='MOC', verbose_name='moc')
-    ls_t = models.FloatField(verbose_name="LS T-score", blank=True, null=True)
-    ls_z = models.FloatField(verbose_name="LS Z-score", blank=True, null=True)
-    ls_bmd = models.FloatField(verbose_name="LS BMD", blank=True, null=True)
-    fn_t = models.FloatField(verbose_name="FN T-score", blank=True, null=True)
-    fn_z = models.FloatField(verbose_name="FN Z-score", blank=True, null=True)
-    fn_bmd = models.FloatField(verbose_name="FN BMD", blank=True, null=True)
-    ft_t = models.FloatField(verbose_name="FT T-score", blank=True, null=True)
-    ft_z = models.FloatField(verbose_name="FT Z-score", blank=True, null=True)
-    ft_bmd = models.FloatField(verbose_name="FT BMD", blank=True, null=True)
+    ls_t = models.FloatField(verbose_name="lombosacrale T-score", blank=True, null=True)
+    ls_z = models.FloatField(verbose_name="lombosacrale Z-score", blank=True, null=True)
+    ls_bmd = models.FloatField(verbose_name="lombosacrale BMD", blank=True, null=True)
+    fn_t = models.FloatField(verbose_name="femoral neck T-score", blank=True, null=True)
+    fn_z = models.FloatField(verbose_name="femoral neck Z-score", blank=True, null=True)
+    fn_bmd = models.FloatField(verbose_name="femoral neck BMD", blank=True, null=True)
+    ft_t = models.FloatField(verbose_name="femorale totale T-score", blank=True, null=True)
+    ft_z = models.FloatField(verbose_name="femorale totale Z-score", blank=True, null=True)
+    ft_bmd = models.FloatField(verbose_name="femorale totale BMD", blank=True, null=True)
+
+    def __str__(self):
+        return f"MOC {self.date.strftime('%d/%m/%y')}"
 
     class Meta:
         verbose_name = 'MOC'
