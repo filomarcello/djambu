@@ -1,9 +1,9 @@
 import datetime
 from . import models
 
-class TextToAnalysisTranslator:
+class TextToAnalysisTranslator: # TODO: ugly class!
 
-    def text_to_analysis(self, text: str) -> None:
+    def text_to_analysis(self, text: str) -> list:
         # clean the string
         text = self.clean_text(text)
         # separate date an the analyses (rest of the string)
