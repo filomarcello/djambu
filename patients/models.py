@@ -52,7 +52,7 @@ class ExemptionCodes(models.Model):
     short_name = models.CharField(max_length=10, verbose_name='abbreviazione')
 
     def __str__(self):
-        return self.code + ' (' + self.short_name + ')'
+        return f"{self.code} ({self.short_name})"
 
     class Meta:
         verbose_name = 'codice esenzione'
@@ -89,7 +89,7 @@ class Exemption(models.Model):
                                       default=utils.timezone.now)
 
     def __str__(self):
-        return str(self.exemption) + ' ' + self.name
+        return f"{self.exemption} {self.name}"
 
     def clean(self):
         # if patient linked, populate fields with its data
@@ -301,7 +301,8 @@ class Analysis(ClinicalElement):
         raise ValidationError('Either value or rate must be set.')
 
     def __str__(self):
-        form = str(self.date) + ' ' + self.name.short_name + ' ' # TODO: format date
+
+        form = f"{self.date.strftime('%d/%m/%y')} {self.name.short_name} "
         if self.value:
             form = form + str(self.value)
             if self.unit:
