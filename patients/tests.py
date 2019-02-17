@@ -6,37 +6,44 @@ from random import random
 
 class AnalysisTestCase(TestCase):
     def setUp(self):
+        patient = Patient.objects.create(
+                last_name='pippo',
+                first_name='plutoso',
+                sex='m',
+                birth_date='2019-01-01',
+                birth_place='carvico'
+        )
         for name, short_name in zip(
                 ['testosterone', 'paratormone', 'tireotropina', 'tiroxina libera', 'tironina libera'],
                 ['testo', 'PTH', 'TSH', 'FT4', 'FT3']):
             AnalysisName.objects.create(name=name, short_name=short_name)
 
-        testo = Analysis(name=AnalysisName.objects.get(short_name='testo'))
+        testo = Analysis(name=AnalysisName.objects.get(short_name='testo'), patient=patient)
         testo.value = 115.0
         testo.lower_limit=2.4
         testo.upper_limit=8.3
         testo.save()
 
-        pth = Analysis(name=AnalysisName.objects.get(short_name='PTH'))
+        pth = Analysis(name=AnalysisName.objects.get(short_name='PTH'), patient=patient)
         pth.value=100
         pth.lower_limit=50
         pth.upper_limit=150
         pth.rate=RATINGS['normale']
         pth.save()
 
-        tsh = Analysis(name=AnalysisName.objects.get(short_name='TSH'))
+        tsh = Analysis(name=AnalysisName.objects.get(short_name='TSH'), patient=patient)
         tsh.value=100
         tsh.lower_limit=50
         tsh.upper_limit=150
         tsh.save()
 
-        ft4 = Analysis(name=AnalysisName.objects.get(short_name='FT4'))
+        ft4 = Analysis(name=AnalysisName.objects.get(short_name='FT4'), patient=patient)
         ft4.value=100
         ft4.lower_limit=50
         ft4.upper_limit=150
         ft4.save()
 
-        ft3 = Analysis(name=AnalysisName.objects.get(short_name='FT3'))
+        ft3 = Analysis(name=AnalysisName.objects.get(short_name='FT3'), patient=patient)
         ft3.value=100
         ft3.rate=RATINGS['normale']
         ft3.save()
@@ -62,6 +69,13 @@ class AnalysisTestCase(TestCase):
 class TextToAnalysisTestCase(TestCase):
 
     def setUp(self):
+        self.patient = Patient.objects.create(
+                last_name='pippo',
+                first_name='plutoso',
+                sex='m',
+                birth_date='2019-01-01',
+                birth_place='carvico'
+        )
         DATE = '01/01/2019'
         START_STRING = f'- {DATE} '
         TSH_ANALYTE = 'TSH'
@@ -90,46 +104,46 @@ class TextToAnalysisTestCase(TestCase):
         AnalysisName.objects.create(name='corticotropina', short_name='ACTH')
 
     def test_one_analyte_rate(self):
-        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_RATE)
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_RATE, self.patient)
         analysys = Analysis.objects.get(name__short_name='TSH')
         self.assertEqual(analysys.rate, 'n')
 
     def test_one_analyte_value(self):
-        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE)
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE, self.patient)
         analysys = Analysis.objects.get(name__short_name='FSH')
         self.assertEqual(analysys.value, 3.15)
 
     def test_one_analyte_value_unit(self):
-        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_UNIT)
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_UNIT, self.patient)
         analysis = Analysis.objects.get(name__short_name='testo')
         self.assertEqual(analysis.unit, 'ng/dl')
 
     def test_one_analyte_value_unit_range(self):
-        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_UNIT_RANGE)
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_UNIT_RANGE, self.patient)
         analysis = Analysis.objects.get(name__short_name='FT4')
         self.assertEqual(analysis.lower_limit, 0.7)
         self.assertEqual(analysis.upper_limit, 1.9)
 
     def test_one_analyte_value_range(self):
-        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_RANGE)
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_RANGE, self.patient)
         analysis = Analysis.objects.get(name__short_name='FT3')
         self.assertEqual(analysis.lower_limit, 2.4)
         self.assertEqual(analysis.upper_limit, 6.2)
 
     def test_one_analyte_value_range_high(self):
-        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_HIGH_RANGE)
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_HIGH_RANGE, self.patient)
         analysis = Analysis.objects.get(name__short_name='corti')
         self.assertEqual(analysis.upper_limit, 22.0)
         self.assertIsNone(analysis.lower_limit)
 
     def test_one_analyte_value_range_low(self):
-        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_LOW_RANGE)
+        Analysis.objects.text_to_analysis(self.ONE_ANALYTE_VALUE_LOW_RANGE, self.patient)
         analysis = Analysis.objects.get(name__short_name='ACTH')
         self.assertEqual(analysis.lower_limit, 10.0)
         self.assertIsNone(analysis.upper_limit)
 
     def test_multiple_analytes(self):
-        Analysis.objects.text_to_analysis(self.MULTIPLE_ANALYTES)
+        Analysis.objects.text_to_analysis(self.MULTIPLE_ANALYTES, self.patient)
         print(Analysis.objects.all())
 
 

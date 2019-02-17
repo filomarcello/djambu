@@ -125,7 +125,7 @@ class AnalysisManager(models.Manager): # TODO: refactor functions
     EMPTY_ANALYSIS_DATA = {'value': None, 'rate': None, 'lower_limit': None,
                            'upper_limit': None, 'name': None, 'unit': None}
 
-    def text_to_analysis(self, text: str):
+    def text_to_analysis(self, text: str, patient: Patient) -> None:
         # clean the string
         text = self.clean_text(text)
         # separate date an the analyses (rest of the string)
@@ -141,7 +141,7 @@ class AnalysisManager(models.Manager): # TODO: refactor functions
             analysis_names = analyses.filter(name__startswith=analysis) | \
                 analyses.filter(short_name__startswith=analysis)
             analysis_name = analysis_names.first()
-            self.create(name=analysis_name, **data)
+            self.create(name=analysis_name, patient=patient, **data)
 
     def clean_text(self, text: str) -> str:
         text = text.strip()
@@ -236,6 +236,8 @@ class ClinicalElement(models.Model):
     """Abstract base class for disorders, analyses and exams."""
     date = models.DateField(verbose_name='data', default=utils.timezone.now)
     name = models.CharField(verbose_name='nome', max_length=250)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE,
+                                verbose_name='paziente')
 
     class Meta:
         abstract = True
