@@ -18,5 +18,7 @@ urlpatterns = [
     path('list/', PatientsListView.as_view(),
          name='patients_list'),
     path('exemption_pdf/<int:pk>', PDFResponseView.as_view(),
-         name='exemption_pdf')
+         name='exemption_pdf'),
+    path('analysis/', AnalysisView.as_view(),
+         name="analysis"),
 ]

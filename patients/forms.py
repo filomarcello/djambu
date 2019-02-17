@@ -1,9 +1,3 @@
-""" 
-created: 11/01/2019
-author: marce
-version: 
-"""
-
 from django import forms
 from .models import Exemption
 

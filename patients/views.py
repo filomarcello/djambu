@@ -8,7 +8,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Spacer, Paragraph
 from .forms import RapidExemptionForm
-from .models import Patient, Exemption
+from .models import *
 
 
 class HomeView(TemplateView):
@@ -153,3 +153,6 @@ class PDFResponseView(DetailView):
                         # TODO: rewrite better this function
 
     
+class AnalysisView(ListView):
+    model = Analysis
+    template_name = "patients/analysis_list.html"
