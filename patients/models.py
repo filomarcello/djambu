@@ -37,9 +37,8 @@ class Patient(models.Model): # TODO: make fields mandatory
             self.fiscal_code = self.fiscal_code.upper()
 
     def __str__(self):
-        return '{} {} - {} - {}'.format(self.last_name, self.first_name,
-                                        self.sex, self.birth_date).title()
-    # TODO: make birth date right format
+        return f"{self.last_name} {self.first_name} - " \
+            f"{self.sex} - {self.birth_date.strftime('%d/%m/%Y')}"
 
     class Meta:
         verbose_name = 'paziente'
