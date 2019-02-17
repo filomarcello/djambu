@@ -160,7 +160,7 @@ class Analysis(ClinicalElement):
     objects = AnalysisManager()
     _tolerance = 0.05
 
-    def rating(self):
+    def rating(self): # TODO: ugly function
         """If not user rated, return the rating of this Analysis."""
         if self.rate: return self.rate
         if not self.lower_limit: return None

@@ -15,7 +15,7 @@ class TextToAnalysisTranslator: # TODO: ugly class!
         return analyses_data
 
     def clean_text(self, text: str) -> str:
-        text = text.strip()
+        text = text.strip(' .')
         text = text.lower()
         return text
 
