@@ -120,7 +120,7 @@ class Center(models.Model):
         verbose_name_plural = 'centri'
 
 
-class AnalysisManager(models.Manager):
+class AnalysisManager(models.Manager): # TODO: refactor functions
 
     EMPTY_ANALYSIS_DATA = {'value': None, 'rate': None, 'lower_limit': None,
                            'upper_limit': None, 'name': None, 'unit': None}
@@ -311,6 +311,23 @@ class Analysis(ClinicalElement):
     class Meta:
         verbose_name = 'analisi'
         verbose_name_plural = 'analisi'
+
+
+class BMD(ClinicalElement):
+    name = models.CharField(max_length=3, default='MOC', verbose_name='moc')
+    ls_t = models.FloatField(verbose_name="LS T-score", blank=True, null=True)
+    ls_z = models.FloatField(verbose_name="LS Z-score", blank=True, null=True)
+    ls_bmd = models.FloatField(verbose_name="LS BMD", blank=True, null=True)
+    fn_t = models.FloatField(verbose_name="FN T-score", blank=True, null=True)
+    fn_z = models.FloatField(verbose_name="FN Z-score", blank=True, null=True)
+    fn_bmd = models.FloatField(verbose_name="FN BMD", blank=True, null=True)
+    ft_t = models.FloatField(verbose_name="FT T-score", blank=True, null=True)
+    ft_z = models.FloatField(verbose_name="FT Z-score", blank=True, null=True)
+    ft_bmd = models.FloatField(verbose_name="FT BMD", blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'MOC'
+        verbose_name_plural = 'MOC'
 
 
 

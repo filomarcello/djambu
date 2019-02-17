@@ -10,6 +10,7 @@ admin.site.register(Place)
 admin.site.register(Center)
 admin.site.register(Analysis)
 admin.site.register(AnalysisName)
+admin.site.register(BMD)
 
 # admin models
 class AnalysisAdminModel(admin.ModelAdmin):
@@ -35,4 +36,5 @@ patients_admin = PatientsAdmin(name='patients_admin')
 patients_admin.register(Patient, PatientsAdminModel)
 patients_admin.register(Exemption, ExemptionAdminModel)
 patients_admin.register(Analysis, AnalysisAdminModel)
+patients_admin.register(BMD)
 
