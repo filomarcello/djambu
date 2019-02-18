@@ -2,6 +2,8 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
 from django import utils
+
+from patients.tools import ItalianPeriodDateField
 from .managers import AnalysisManager
 
 SEX_CHOICES = (('f', 'femmina'), ('m', 'maschio'))
@@ -223,6 +225,10 @@ class BMD(ClinicalElement):
         verbose_name_plural = 'MOC'
 
 
+class TestModel(models.Model):
+    date = ItalianPeriodDateField(verbose_name='data')
 
+    def __str__(self):
+        return str(self.date)
 
 

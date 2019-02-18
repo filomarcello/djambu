@@ -1,5 +1,9 @@
 import datetime
+
+from django.core.exceptions import ValidationError
+
 from . import models
+from django.db import models
 
 class TextToAnalysisTranslator: # TODO: ugly class!
 
@@ -102,3 +106,84 @@ class TextToAnalysisTranslator: # TODO: ugly class!
             high = float(high)
         return low, high
 
+
+class ItalianPeriodDate:
+    MONTH_DURATION = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+
+    def __init__(self, year: int, month: int = None, day: int = None):
+        if year < 0: raise ValueError
+        self._year = year
+        self._month = None
+        self._day = None
+        if month:
+            if month < 1 or month > 12:
+                raise ValueError("month number out of range.")
+            self._month = month
+            if day:
+                if day < 1 or day > self.MONTH_DURATION[self._month - 1]:
+                    raise ValueError("day number out of range.")
+                self._day = day
+
+    @classmethod
+    def fromstring(cls, time: str):
+        """time: d/m/yy or d/m/yyyy or m/yy or m/yyyy or yyyy."""
+        day = None
+        month = None
+        tokens = time.split('/')
+        tokens.reverse()
+        tokens_number = len(tokens)
+        if tokens_number >= 1:
+            year = int(tokens[0])
+        if tokens_number > 1:
+            month = int(tokens[1])
+        if tokens_number > 2:
+            day = int(tokens[2])
+        return cls(year, month, day)
+
+    def __str__(self):
+        if self._day:
+            day = str(self._day) + '/'
+        else:
+            day = ''
+        if self._month:
+            month = str(self._month) + '/'
+        else:
+            month = ''
+        return f"{day}{month}{self._year}"
+
+    def __len__(self):
+        return len(str(self))
+
+
+class ItalianPeriodDateField(models.CharField):
+
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 10
+        super().__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super().deconstruct()
+        del kwargs["max_length"]
+        return name, path, args, kwargs
+
+    def from_db_value(self, value, expression, connection):
+        # super().from_db_value(value, expression, connection)
+        if value is None:
+            return value
+        try:
+            return ItalianPeriodDate.fromstring(value)
+        except ValueError:
+            raise ValidationError('valore non valido')
+
+    def to_python(self, value):
+        if isinstance(value, ItalianPeriodDate):
+            return value
+        if value is None:
+            return value
+        try:
+            return ItalianPeriodDate.fromstring(value)
+        except ValueError:
+            raise ValueError('valore non valido')
+
+    def get_prep_value(self, value):
+        return str(value)
