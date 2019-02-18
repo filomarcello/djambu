@@ -11,7 +11,7 @@ admin.site.register(Center)
 admin.site.register(Analysis)
 admin.site.register(AnalysisName)
 admin.site.register(BMD)
-admin.site.register(TestModel)
+# admin.site.register(TestModel)
 
 # admin models
 class AnalysisAdminModel(admin.ModelAdmin):

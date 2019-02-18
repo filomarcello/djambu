@@ -123,7 +123,7 @@ class Center(models.Model):
 
 class ClinicalElement(models.Model):
     """Abstract base class for disorders, analyses and exams."""
-    date = models.DateField(verbose_name='data', default=utils.timezone.now)
+    date = ItalianPeriodDateField(verbose_name='data', default='01/01/2000')
     name = models.CharField(verbose_name='nome', max_length=250)
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE,
                                 verbose_name='paziente')
@@ -192,7 +192,7 @@ class Analysis(ClinicalElement):
 
     def __str__(self):
 
-        form = f"{self.date.strftime('%d/%m/%y')} {self.name.short_name} "
+        form = f"{str(self.date)} {self.name.short_name} " # TODO: return better date
         if self.value:
             form = form + str(self.value)
             if self.unit:
@@ -218,17 +218,17 @@ class BMD(ClinicalElement):
     ft_bmd = models.FloatField(verbose_name="femorale totale BMD", blank=True, null=True)
 
     def __str__(self):
-        return f"MOC {self.date.strftime('%d/%m/%y')}"
+        return f"MOC {str(self.date)}"
 
     class Meta:
         verbose_name = 'MOC'
         verbose_name_plural = 'MOC'
 
 
-class TestModel(models.Model):
-    date = ItalianPeriodDateField(verbose_name='data')
-
-    def __str__(self):
-        return str(self.date)
+# class TestModel(models.Model):
+#     date = ItalianPeriodDateField(verbose_name='data')
+#
+#     def __str__(self):
+#         return str(self.date)
 
 

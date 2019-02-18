@@ -1,13 +1,13 @@
 import datetime
-
 from django.core.exceptions import ValidationError
+from django.db.models import CharField
 
-from . import models
-from django.db import models
+EMPTY_ANALYSIS_DATA = {'value': None, 'rate': None, 'lower_limit': None,
+                           'upper_limit': None, 'name': None, 'unit': None}
 
 class TextToAnalysisTranslator: # TODO: ugly class!
 
-    def text_to_analysis(self, text: str) -> list:
+    def text_to_analysis(self, text: str) -> tuple:
         # clean the string
         text = self.clean_text(text)
         # separate date an the analyses (rest of the string)
@@ -16,7 +16,7 @@ class TextToAnalysisTranslator: # TODO: ugly class!
         analysis_tokens = self.separate_analyses(analyses)
         # get analyses data
         analyses_data = self.extract_analysis_data(analysis_tokens)
-        return analyses_data
+        return date, analyses_data
 
     def clean_text(self, text: str) -> str:
         text = text.strip(' .')
@@ -28,20 +28,20 @@ class TextToAnalysisTranslator: # TODO: ugly class!
         if text.startswith('- '):
             text = text.lstrip('- ')
         date_token, rest_of_the_string = text.split(' ', maxsplit=1)
-        date_tokens = date_token.split('/')
+        # date_tokens = date_token.split('/')
 
-        month = 1
-        day = 1
-        n_tokens = len(date_tokens)
-        if n_tokens >= 1:
-            year = int(date_tokens.pop())
-        if n_tokens >= 2:
-            month = int(date_tokens.pop())
-        if n_tokens == 3:
-            day = int(date_tokens.pop())
-        # TODO: exception
-        date = datetime.date(year, month, day)
-        return date, rest_of_the_string
+        # month = 1
+        # day = 1
+        # n_tokens = len(date_tokens)
+        # if n_tokens >= 1:
+        #     year = int(date_tokens.pop())
+        # if n_tokens >= 2:
+        #     month = int(date_tokens.pop())
+        # if n_tokens == 3:
+        #     day = int(date_tokens.pop())
+        # # TODO: exception
+        # date = datetime.date(year, month, day)
+        return date_token, rest_of_the_string
 
     def separate_analyses(self, text: str) -> list:
         analyses_tokens = text.split(',')
@@ -59,7 +59,7 @@ class TextToAnalysisTranslator: # TODO: ugly class!
 
     def extract_data(self, text: str) -> dict: # TODO: ugly function!
         tokens = text.split()
-        content = dict(models.EMPTY_ANALYSIS_DATA)
+        content = dict(EMPTY_ANALYSIS_DATA)
         # control the first token to find value or rating
         if self.is_value(tokens[0]):
             content['value'] = float(tokens[0])
@@ -155,7 +155,7 @@ class ItalianPeriodDate:
         return len(str(self))
 
 
-class ItalianPeriodDateField(models.CharField):
+class ItalianPeriodDateField(CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 10
