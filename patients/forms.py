@@ -9,3 +9,7 @@ class RapidExemptionForm(forms.ModelForm):
         fields = ['patient', 'exemption', 'signature_place', 'signature_date']
 
 
+class TextToAnalysisForm(forms.Form):
+    """Used to quickly translate a string in Analysis objects."""
+    text = forms.CharField()
+    patient = forms.CharField()

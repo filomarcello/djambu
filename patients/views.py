@@ -1,4 +1,5 @@
 from django.http import FileResponse, HttpResponse
+from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, \
     FormView
 from django.urls import reverse
@@ -7,7 +8,7 @@ from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Spacer, Paragraph
-from .forms import RapidExemptionForm
+from .forms import *
 from .models import *
 
 
@@ -65,7 +66,7 @@ class PDFResponseView(DetailView):
 
     model = Exemption
 
-    def render_to_response(self, context, **response_kwargs):
+    def render_to_response(self, context, **response_kwargs): # TODO: move body function in tools
         return self.make_pdf()
 
     def make_pdf(self):
@@ -156,3 +157,29 @@ class PDFResponseView(DetailView):
 class AnalysisView(ListView):
     model = Analysis
     template_name = "patients/analysis_list.html"
+
+
+class TestTextToAnalysisView(ListView, FormView):
+    model = Analysis
+    form_class = TextToAnalysisForm
+    success_url = '/patients/test'
+    template_name = "patients/test_panel_text_to_analysis.html"
+    context_object_name = 'context'
+    # take one patient just for test
+    queryset = Analysis.objects.filter(patient__last_name__startswith='po')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['patient'] = Patient.objects.get(last_name__startswith='po')
+        return context
+
+    def form_valid(self, form):
+        Analysis.objects.text_to_analysis(form.cleaned_data['text'],
+            Patient.objects.get(id=int(form.cleaned_data['patient'])))
+        return super().form_valid(form)
+
+
+class TestTextToAnalysisTranslatorView(View):
+
+    def post(self, request, *args, **kwargs):
+        request

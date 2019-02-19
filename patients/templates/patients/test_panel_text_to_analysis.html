@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test</title>
+</head>
+<body>
+  <h1>Test text_to_analysis</h1>
+  <form action="" method="post">
+    {% csrf_token %}
+    {{ form.text.label_tag }} {{ form.text }}
+    <input type="hidden" id="id_patient" name="patient" required
+           value="{{ patient.id }}">
+    <input type="submit" value="invia">
+  </form>
+  <p>Analisi del paziente {{ patient.last_name }} {{ patient.first_name }}</p>
+  {% for analysis in context %}
+    {{ analysis }} <br>
+  {% endfor %}
+</body>
+</html>
