@@ -11,7 +11,6 @@ admin.site.register(Center)
 admin.site.register(Analysis)
 admin.site.register(AnalysisName)
 admin.site.register(BMD)
-# admin.site.register(TestModel)
 
 # admin models
 class AnalysisAdminModel(admin.ModelAdmin):
@@ -37,5 +36,5 @@ patients_admin = PatientsAdmin(name='patients_admin')
 patients_admin.register(Patient, PatientsAdminModel)
 patients_admin.register(Exemption, ExemptionAdminModel)
 patients_admin.register(Analysis, AnalysisAdminModel)
-patients_admin.register(BMD)
+patients_admin.register(BMD) # TODO: AdminModel for BMD
 

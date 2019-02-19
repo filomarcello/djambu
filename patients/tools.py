@@ -28,19 +28,6 @@ class TextToAnalysisTranslator: # TODO: ugly class!
         if text.startswith('- '):
             text = text.lstrip('- ')
         date_token, rest_of_the_string = text.split(' ', maxsplit=1)
-        # date_tokens = date_token.split('/')
-
-        # month = 1
-        # day = 1
-        # n_tokens = len(date_tokens)
-        # if n_tokens >= 1:
-        #     year = int(date_tokens.pop())
-        # if n_tokens >= 2:
-        #     month = int(date_tokens.pop())
-        # if n_tokens == 3:
-        #     day = int(date_tokens.pop())
-        # # TODO: exception
-        # date = datetime.date(year, month, day)
         return date_token, rest_of_the_string
 
     def separate_analyses(self, text: str) -> list:
