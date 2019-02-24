@@ -159,7 +159,7 @@ class AnalysisView(ListView):
     template_name = "patients/analysis_list.html"
 
 
-class TestTextToAnalysisView(ListView, FormView):
+class TestTextToAnalysisView(ListView, FormView): # TODO: check errors in text_to_analysis
     model = Analysis
     form_class = TextToAnalysisForm
     success_url = '/patients/test'
