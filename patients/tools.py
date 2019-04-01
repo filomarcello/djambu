@@ -1,9 +1,17 @@
 import datetime
 from django.core.exceptions import ValidationError
 from django.db.models import CharField
+from django.http import HttpResponse
+from django.views.generic.base import View
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.platypus import SimpleDocTemplate, Spacer, Paragraph
 
 EMPTY_ANALYSIS_DATA = {'value': None, 'rate': None, 'lower_limit': None,
                            'upper_limit': None, 'name': None, 'unit': None}
+
 
 class TextToAnalysisTranslator: # TODO: ugly class!
 
@@ -95,13 +103,25 @@ class TextToAnalysisTranslator: # TODO: ugly class!
 
 
 class ItalianPeriodDate:
+
     MONTH_DURATION = (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+    LIMIT_FOR_2K = 70 # 72 --> 1972; 55 --> 2055
 
     def __init__(self, year: int, month: int = None, day: int = None):
-        if year < 0: raise ValueError
+        if year < 0: raise ValueError("year must be positive.")
+        digits = len(str(year))
+        if digits != 2 and digits != 4:
+            raise ValueError("year must be 2 or 4 digits.")
+        if year < 100:
+            if year < self.LIMIT_FOR_2K:
+                year = 2000 + year
+            else:
+                year = 1900 + year
         self._year = year
         self._month = None
         self._day = None
+        if month is None and bool(day) is True:
+            raise ValueError("Cannot set day without month.")
         if month:
             if month < 1 or month > 12:
                 raise ValueError("month number out of range.")
@@ -138,8 +158,105 @@ class ItalianPeriodDate:
             month = ''
         return f"{day}{month}{self._year}"
 
-    def __len__(self):
-        return len(str(self))
+    def __eq__(self, other: 'ItalianPeriodDate') -> bool:
+        return self._day == other._day \
+           and self._month == other._month \
+           and self._year == other._year
+
+    def __ne__(self, other: 'ItalianPeriodDate') -> bool:
+        return not self == other
+
+    def __lt__(self, other: 'ItalianPeriodDate') -> bool:
+        """'<' operator between two ItalianPeriodDate objects.
+
+        28/11/1971 < 29/11/1971 < 12/1971 < 1972 is True, but
+        28/11/1971 !< 11/1971  !< 1971  !!!
+        """
+        if self._year < other._year:
+            return True
+        if self._year == other._year:
+            if self._month == other._month:
+                if self._day is None or other._day is None:
+                    raise TypeError("'<' not supported between 'YYYY/MM' and"
+                                    " YYYY/MM/DD dates")
+                if self._day < other._day:
+                    return True
+            if self._month is None or other._month is None:
+                raise TypeError("'<' not supported between 'YYYY' and"
+                                " YYYY/MM dates")
+            if self._month < other._month:
+                return True
+        return False
+
+    def __le__(self, other: 'ItalianPeriodDate') -> bool:
+        return self == other or self < other
+
+    def __gt__(self, other: 'ItalianPeriodDate') -> bool:
+        """'>' operator between two ItalianPeriodDate objects.
+
+        1971 > 12/1971 > 29/11/1971 > 28/11/1971 is True, but
+        28/11/1971 !> 11/1971  !> 1971  !!!
+        """
+        if self._year > other._year:
+            return True
+        if self._year == other._year:
+            if self._month == other._month:
+                if self._day is None or other._day is None:
+                    raise TypeError("'>' not supported between 'YYYY/MM' and"
+                                    " YYYY/MM/DD dates")
+                if self._day > other._day:
+                    return True
+            if self._month is None or other._month is None:
+                raise TypeError("'>' not not supported between 'YYYY' and"
+                                " YYYY/MM dates")
+            if self._month > other._month:
+                return True
+
+        return False
+
+    def __ge__(self, other: 'ItalianPeriodDate') -> bool:
+        return self == other or self > other
+
+    def __matmul__(self, other: 'ItalianPeriodDate') -> bool:
+        """self @ other is True if self is closer to other.
+
+        28/11/1971 @ 28/11/1971 is True (and also subdates)
+        28/11/1971 @ 11/1971 is True
+        11/1971 @ 1971 is True
+        28/11/1971 @ 1971 is True
+        """
+        # check year inequality
+        if self._year != other._year:
+            return False # no matter what months and day are
+        # here years are equal
+        # check months equality
+        if self._month == other._month:
+            # here months are identical
+            # check if they're both None
+            if self._month is None and other._month is None:
+                # here months are None
+                # days must be both None (by definition in ItalianPeriodDate)
+                return True
+            else: # here months are numeric equal
+                # check if days are equal
+                if self._day == other._day:
+                    # here days are identical numerically or None
+                    # check if one or both is None
+                    return True
+                else: # here days are different
+                    # check if one is None
+                    if self._day is None or other._day is None:
+                        # here one day is none
+                        return True
+                    else: # here days are numerically different
+                        return False
+        else: # here months are different
+            # check if one is None
+            if self._month is None or other._month is None:
+                # here one month is None
+                return True
+            else: # here month are numerically different
+                return False
 
 
 class ItalianPeriodDateField(CharField):
@@ -174,3 +291,36 @@ class ItalianPeriodDateField(CharField):
 
     def get_prep_value(self, value):
         return str(value)
+
+
+class PDFGeneratorView(View):
+
+    DEFAULT_PDF_FILE_NAME = 'doc'
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response()
+
+    def render_to_response(self):
+        response = HttpResponse(content_type='application/pdf')
+        response = self.make_pdf(response)
+        response = self.make_pdf_file_name(response)
+        return response
+
+    def make_pdf(self, response: HttpResponse) -> HttpResponse:
+        document = self.make_document(response)
+        story = self.make_story()
+        document.build(story)
+        return response # TODO: add title of the pdf document
+
+    def make_pdf_file_name(self, response: HttpResponse) -> HttpResponse:
+        response['Content-Disposition'] = \
+            f'attachment; filename="prova{self.DEFAULT_PDF_FILE_NAME}.pdf"'
+
+    def make_document(self, response: HttpResponse) -> SimpleDocTemplate:
+        return SimpleDocTemplate(response, pageSize=A4)
+
+    def make_story(self) -> list:
+        normal = ParagraphStyle(name='normal', fontName='Helvetica', fontSize=12)
+        story = []
+        story.append(Paragraph("Ciao", normal))
+        return story

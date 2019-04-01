@@ -21,4 +21,6 @@ urlpatterns = [
          name='exemption_pdf'),
     path('test/', TestTextToAnalysisView.as_view(),
          name="test"),
+    path('test_pdf/', TestPDFResponseView.as_view(),
+         name='test_pdf')
 ]

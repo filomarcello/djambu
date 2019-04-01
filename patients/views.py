@@ -10,6 +10,7 @@ from reportlab.lib.units import cm
 from reportlab.platypus import SimpleDocTemplate, Spacer, Paragraph
 from .forms import *
 from .models import *
+from .tools import PDFGeneratorView
 
 
 class HomeView(TemplateView):
@@ -153,7 +154,11 @@ class PDFResponseView(DetailView):
         return response # TODO: add title of the pdf document
                         # TODO: rewrite better this function
 
-    
+
+class TestPDFResponseView(PDFGeneratorView):
+    pass
+
+
 class AnalysisView(ListView):
     model = Analysis
     template_name = "patients/analysis_list.html"
