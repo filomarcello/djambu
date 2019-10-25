@@ -16,9 +16,10 @@ RATINGS = {'zero': '0',
 RATING_CHOICES = tuple((k, v) for v, k in RATINGS.items())
 RATING_CODES = tuple(RATINGS.keys())
 EMPTY_ANALYSIS_DATA = {'value': None, 'rate': None, 'lower_limit': None,
-                           'upper_limit': None, 'name': None, 'unit': None}
+                       'upper_limit': None, 'name': None, 'unit': None}
 
-class Patient(models.Model): # TODO: make fields mandatory
+
+class Patient(models.Model):  # TODO: make fields mandatory
     """Anagrafic data of a patient."""
     last_name = models.CharField(max_length=50, verbose_name='cognome')
     first_name = models.CharField(max_length=50, verbose_name='nome')
@@ -39,8 +40,8 @@ class Patient(models.Model): # TODO: make fields mandatory
             self.fiscal_code = self.fiscal_code.upper()
 
     def __str__(self):
-        return f"{self.last_name} {self.first_name} - " \
-            f"{self.sex} - {self.birth_date.strftime('%d/%m/%Y')}"
+        return f"{self.last_name.capitalize()} {self.first_name.capitalize()} - " \
+               f"{self.sex.upper()} - {self.birth_date.strftime('%d/%m/%Y')}"
 
     class Meta:
         verbose_name = 'paziente'
@@ -133,7 +134,6 @@ class ClinicalElement(models.Model):
 
 
 class AnalysisName(models.Model):
-
     name = models.CharField(verbose_name='nome', max_length=100)
     short_name = models.CharField(verbose_name='abbreviazione', max_length=25)
 
@@ -150,7 +150,7 @@ class Analysis(ClinicalElement):
     name = models.ForeignKey(AnalysisName, verbose_name='nome',
                              on_delete=models.CASCADE)
     value = models.FloatField(blank=True, null=True, verbose_name='valore',
-                              validators=[MinValueValidator(limit_value=0),])
+                              validators=[MinValueValidator(limit_value=0), ])
     rate = models.CharField(max_length=2, choices=RATING_CHOICES, blank=True,
                             verbose_name='valutazione', null=True)
     lower_limit = models.FloatField(blank=True, null=True,
@@ -162,7 +162,7 @@ class Analysis(ClinicalElement):
     objects = AnalysisManager()
     _tolerance = 0.05
 
-    def rating(self): # TODO: ugly function
+    def rating(self):  # TODO: ugly function
         """If not user rated, return the rating of this Analysis."""
         if self.rate: return self.rate
         if not self.lower_limit: return None
@@ -192,7 +192,7 @@ class Analysis(ClinicalElement):
 
     def __str__(self):
 
-        form = f"{str(self.date)} {self.name.short_name} " # TODO: return better date
+        form = f"{str(self.date)} {self.name.short_name} "  # TODO: return better date
         if self.value:
             form = form + str(self.value)
             if self.unit:
@@ -224,11 +224,8 @@ class BMD(ClinicalElement):
         verbose_name = 'MOC'
         verbose_name_plural = 'MOC'
 
-
 # class TestModel(models.Model):
 #     date = ItalianPeriodDateField(verbose_name='data')
 #
 #     def __str__(self):
 #         return str(self.date)
-
-
